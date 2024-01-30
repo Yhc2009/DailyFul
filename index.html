@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Dailyful</title>
+    <style>
+      #calendar {
+        margin: 0;
+        padding: 0;
+      }
+      #year {
+        margin: 0;
+        padding: 0;
+      }
+      #a {
+        font-size: 2vw;
+      }
+      #toplist {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 5%;
+        overflow: hidden;
+        background-color: rgba(0, 0, 0, 0.5);
+      }
+      #toplist li {
+        float: right;
+        width: 10vw;
+        height: 5%;
+      }
+      #toplist li a {
+        display: block;
+        color: rgb(255, 255, 255);
+        text-decoration: none;
+        text-align: center;
+        font-size: 2vw;
+        padding: 1vw;
+      }
+      #toplist li a:hover {
+        background-color: rgb(255, 255, 255, 0.3);
+        color: white;
+      }
+      #toplist li a:active {
+        background-color: rgb(200, 255, 186);
+        color: white;
+      }
+    </style>
+  </head>
+  <body
+    onload="Refresh();"
+    style="background-color: rgb(65, 65, 65); margin: 0; padding: 0"
+  >
+    <div style="height: 5%; margin: 0; padding: 0">
+      <ul id="toplist">
+        <li><a onclick="Save();">Save</a></li>
+        <li><a onclick="alert('还没做好诶')">Edit</a></li>
+        <li><a onclick="alert('还没做好诶')">Settings</a></li>
+      </ul>
+    </div>
+
+    <textarea
+      id="inputarea"
+      cols="66"
+      rows="66"
+      style="
+        background-color: rgba(0, 0, 0, 0.3);
+        width: 80%;
+        height: 95%;
+        position: absolute;
+        right: 0;
+        padding: 0;
+        margin: 0;
+        border: 0;
+        color: white;
+        font-size: 2vw;
+      "
+    >
+Open your note on the left side</textarea
+    >
+
+    <div style="background-color: rgba(255, 255, 255, 0.3); width: 20%">
+      <ul id="calendar"></ul>
+    </div>
+    <div style="height: 20vw; margin: 0; padding: 0; width: 100%"></div>
+  </body>
+  <script>
+    var calendar = document.getElementById("calendar");
+    var inputarea = document.getElementById("inputarea");
+
+    var this_date = new Date();
+    var this_year = this_date.getFullYear();
+    var this_month = this_date.getMonth() + 1;
+    var this_day = this_date.getDate();
+    var this_hour = this_date.getHours();
+    var this_minute = this_date.getMinutes();
+
+    var lockedItemDate =
+      this_year.toString() +
+      "y" +
+      this_month.toString() +
+      "m" +
+      this_day.toString() +
+      "d";
+
+    var months = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+    var monthsMaxDay = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    function IfLeapYear(year) {
+      if (year % 4 == 0 && year % 100 != 0) {
+        return true;
+      } else if (year % 400 == 0) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+    function SetElementDisplay(name) {
+      if (document.getElementById(name).style.display == "none") {
+        document.getElementById(name).style.display = "";
+      } else {
+        document.getElementById(name).style.display = "none";
+      }
+    }
+    var originalYear = 2020;
+
+    function View(id) {
+      lockedItemDate = id;
+      var get = localStorage.getItem(id);
+      if (get != null) {
+        inputarea.value = get;
+      } else {
+        inputarea.value = "Isn't it a little empty here?";
+      }
+    }
+
+    function Save() {
+      localStorage.setItem(lockedItemDate, inputarea.value);
+      // document.getElementById(date_for).innerHTML +=
+      //   "<ul style='position:relative;left:-100%;'><a id='a'  name='" +
+      //   date_for +
+      //   this_hour +
+      //   "h" +
+      //   this_minute +
+      //   "min" +
+      //   "'>" +
+      //   "*" +
+      //   this_hour +
+      //   "h" +
+      //   this_minute +
+      //   "min" +
+      //   "</a></ul>";
+    }
+
+    function Refresh() {
+      this_monthsMaxDay = monthsMaxDay;
+      for (i1 = originalYear; this_year >= i1; i1 += 1) {
+        if (IfLeapYear(i1)) {
+          this_monthsMaxDay[1] = 29;
+        } else {
+          this_monthsMaxDay[1] = 28;
+        }
+        var id1 = "'" + i1 + "y" + "'";
+        var for_year =
+          "<ul id='year'>" +
+          `<a id="a" onclick="SetElementDisplay(${id1})">` +
+          i1 +
+          "</a>" +
+          "<div style='display:none' id=" +
+          id1 +
+          ">" +
+          "</div>" +
+          "</ul>";
+        calendar.innerHTML += for_year;
+        for (i2 = 0; i2 < 12; i2++) {
+          var id2 = "'" + i1 + "y" + (i2 + 1) + "m" + "'";
+          var for_month =
+            "<ul>" +
+            `<a id="a" onclick="SetElementDisplay(${id2})">` +
+            months[i2] +
+            "</a>" +
+            "<div style='display:none' id=" +
+            id2 +
+            ">" +
+            "</div>" +
+            "</ul>";
+          document.getElementById(i1 + "y").innerHTML += for_month;
+          for (i3 = 1; i3 <= this_monthsMaxDay[i2]; i3++) {
+            var id3 = "'" + i1 + "y" + (i2 + 1) + "m" + i3 + "d" + "'";
+            var for_day =
+              "<ul>" +
+              `<a id="a" onclick="View(${id3});">` +
+              i3 +
+              "</a>" +
+              "<div style='display:none' id=" +
+              id3 +
+              ">" +
+              "</div>" +
+              "</ul>";
+            document.getElementById(i1 + "y" + (i2 + 1) + "m").innerHTML +=
+              for_day;
+          }
+        }
+      }
+    }
+  </script>
+</html>
